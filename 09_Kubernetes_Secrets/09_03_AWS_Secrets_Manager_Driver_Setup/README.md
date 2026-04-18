@@ -116,9 +116,18 @@ Install the core driver that enables Kubernetes to mount external secrets.
 
 ```bash
 # Install the Secrets Store CSI Driver in the kube-system namespace:
+#helm install csi-secrets-store \
+ # secrets-store-csi-driver/secrets-store-csi-driver \
+#  --namespace kube-system
+
+# it will install tokn verification for csi driver from service account are else it will faill
 helm install csi-secrets-store \
   secrets-store-csi-driver/secrets-store-csi-driver \
-  --namespace kube-system
+  --namespace kube-system \
+  --set "linux.tokenRequests[0].audience=sts.amazonaws.com" \
+  --set "linux.tokenRequests[0].expirationSeconds=3600" \
+  --set "linux.tokenRequests[1].audience=pods.eks.amazonaws.com" \
+  --set "linux.tokenRequests[1].expirationSeconds=3600"
 
 # List all Helm releases across namespaces:
 helm list --all-namespaces
